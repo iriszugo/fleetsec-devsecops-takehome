@@ -83,14 +83,13 @@ jobs:
       - name: Run SQL Injection rule
         run: |
           semgrep scan \
-            --config .semgrep/fleetsec-sqli.yml \
-            app/src
-
+  --config app/.semgrep/fleetsec-sqli.yml \
+  app/src
       - name: Run Sensitive Logging rule
         run: |
-          semgrep scan \
-            --config .semgrep/fleetsec-sensitive-logging.yml \
-            app/tests/semgrep
+            semgrep scan \
+  --config app/.semgrep/fleetsec-sensitive-logging.yml \
+  app/tests/semgrep
   checkov:
     name: Checkov IaC Scan
     runs-on: ubuntu-latest

@@ -1,0 +1,26 @@
+{
+  "name": "fleetsec-vulnerable-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FleetSec DevSecOps Day 1 laboratory application",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "test": "jest --runInBand",
+    "sbom": "cyclonedx-npm --output-format JSON --output-file ../reports/sbom/bom.json"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@cyclonedx/cyclonedx-npm": "^4.0.3",
+    "jest": "^30.0.5",
+    "supertest": "^7.1.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

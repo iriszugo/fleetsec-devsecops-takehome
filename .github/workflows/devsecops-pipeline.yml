@@ -93,7 +93,21 @@ jobs:
           semgrep scan \
             --config app/.semgrep/fleetsec-sensitive-logging.yml \
             app/tests/semgrep
+      - name: Run Semgrep SARIF scan
+        run: |
+          semgrep scan \
+            --config app/.semgrep \
+            --sarif \
+            --output semgrep-results.sarif \
+            app
 
+      - name: Upload Semgrep SARIF
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-sarif
+          path: semgrep-results.sarif
+          if-no-files-found: error
+          retention-days: 7
   checkov:
     name: Checkov IaC Scan
     runs-on: ubuntu-latest

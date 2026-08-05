@@ -1,0 +1,33 @@
+rules:
+  - id: fleetsec-sensitive-data-logging
+    message: >
+      Sensitive or personally identifiable information may be exposed
+      through application logging.
+    severity: ERROR
+    languages:
+      - javascript
+
+    patterns:
+      - pattern-either:
+          - pattern: console.$METHOD(..., $OBJECT.password, ...)
+          - pattern: console.$METHOD(..., $OBJECT.email, ...)
+          - pattern: console.$METHOD(..., $OBJECT.ssn, ...)
+          - pattern: console.$METHOD(..., $OBJECT.documentNumber, ...)
+          - pattern: console.$METHOD(..., $OBJECT.phone, ...)
+
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(log|info|warn|error|debug)$
+
+    metadata:
+      category: security
+      technology:
+        - nodejs
+        - express
+      cwe:
+        - "CWE-532"
+      owasp:
+        - "A09:2021-Security Logging and Monitoring Failures"
+      confidence: HIGH
+      impact: HIGH
+      likelihood: MEDIUM

@@ -1,0 +1,27 @@
+rules:
+  - id: fleetsec-sqli
+    message: >
+      Possible SQL Injection detected.
+      SQL query appears to be built using string interpolation before execution.
+    severity: ERROR
+    languages:
+      - javascript
+
+    patterns:
+      - pattern: db.all($QUERY, ...)
+      - pattern-inside: |
+          $QUERY = `...${...}...`;
+          ...
+
+    metadata:
+      category: security
+      technology:
+        - express
+        - sqlite
+      cwe:
+        - "CWE-89"
+      owasp:
+        - "A03:2021-Injection"
+      confidence: HIGH
+      impact: HIGH
+      likelihood: HIGH

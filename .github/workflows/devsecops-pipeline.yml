@@ -16,6 +16,7 @@ permissions:
   security-events: write
 
 jobs:
+
   build-test-sbom:
     name: Build, Test and SBOM
     runs-on: ubuntu-latest
@@ -69,6 +70,7 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   semgrep:
     name: Semgrep SAST
     runs-on: ubuntu-latest
@@ -83,13 +85,15 @@ jobs:
       - name: Run SQL Injection rule
         run: |
           semgrep scan \
-  --config app/.semgrep/fleetsec-sqli.yml \
-  app/src
+            --config app/.semgrep/fleetsec-sqli.yml \
+            app/src
+
       - name: Run Sensitive Logging rule
         run: |
-            semgrep scan \
-  --config app/.semgrep/fleetsec-sensitive-logging.yml \
-  app/tests/semgrep
+          semgrep scan \
+            --config app/.semgrep/fleetsec-sensitive-logging.yml \
+            app/tests/semgrep
+
   checkov:
     name: Checkov IaC Scan
     runs-on: ubuntu-latest
@@ -105,6 +109,7 @@ jobs:
           config_file: .checkov/config.yaml
           framework: terraform
           quiet: true
+
   trivy:
     name: Trivy Vulnerability Scan
     runs-on: ubuntu-latest

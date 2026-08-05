@@ -3,3 +3,7 @@ awscliv2.zip
 *.zip
 *.tar.gz
 *.deb
+
+# Local verification artifacts
+reports/day1-verification/
+trivy-results.json

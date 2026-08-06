@@ -7,3 +7,8 @@ awscliv2.zip
 # Local verification artifacts
 reports/day1-verification/
 trivy-results.json
+
+# Environment secrets
+.env
+.env.*
+!.env.example

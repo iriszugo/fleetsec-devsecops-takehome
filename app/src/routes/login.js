@@ -1,5 +1,6 @@
 const express = require("express");
 const rateLimit = require("express-rate-limit");
+const { loadSecurityConfig } = require("../config/securityConfig");
 
 const router = express.Router();
 
@@ -16,17 +17,26 @@ const loginLimiter = rateLimit({
 router.post("/login", loginLimiter, (req, res) => {
   const { username, password } = req.body;
 
-  if (username === "admin" && password === "FleetSec123!") {
-    return res.status(200).json({
-      authenticated: true,
-      message: "Authentication successful"
+  try {
+    const { adminUsername, adminPassword } = loadSecurityConfig();
+
+    if (username === adminUsername && password === adminPassword) {
+      return res.status(200).json({
+        authenticated: true,
+        message: "Authentication successful"
+      });
+    }
+
+    return res.status(401).json({
+      authenticated: false,
+      error: "Invalid credentials"
+    });
+  } catch (error) {
+    return res.status(500).json({
+      authenticated: false,
+      error: "Authentication configuration unavailable"
     });
   }
-
-  return res.status(401).json({
-    authenticated: false,
-    error: "Invalid credentials"
-  });
 });
 
 module.exports = {

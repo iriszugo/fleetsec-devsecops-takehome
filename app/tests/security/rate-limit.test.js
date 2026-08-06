@@ -2,7 +2,23 @@ const { randomUUID } = require("crypto");
 const request = require("supertest");
 const express = require("express");
 
+const TEST_ADMIN_USERNAME = "admin-test";
+const TEST_ADMIN_PASSWORD = "StrongTestPass123!";
+
+
 describe("FleetSec Rate Limiting security controls", () => {
+  beforeEach(() => {
+    process.env.JWT_SECRET = "day4-test-jwt-secret-minimum-32-characters";
+    process.env.ADMIN_USERNAME = TEST_ADMIN_USERNAME;
+    process.env.ADMIN_PASSWORD = TEST_ADMIN_PASSWORD;
+  });
+
+  afterEach(() => {
+    delete process.env.JWT_SECRET;
+    delete process.env.ADMIN_USERNAME;
+    delete process.env.ADMIN_PASSWORD;
+  });
+
   test("blocks authentication after too many failed attempts", async () => {
     jest.resetModules();
 
@@ -18,7 +34,7 @@ describe("FleetSec Rate Limiting security controls", () => {
       await request(app)
         .post("/api/v1/login")
         .send({
-          username: "admin",
+          username: TEST_ADMIN_USERNAME,
           password: invalidPassword
         });
     }
@@ -26,7 +42,7 @@ describe("FleetSec Rate Limiting security controls", () => {
     const response = await request(app)
       .post("/api/v1/login")
       .send({
-        username: "admin",
+        username: TEST_ADMIN_USERNAME,
         password: invalidPassword
       });
 
@@ -49,8 +65,8 @@ describe("FleetSec Rate Limiting security controls", () => {
     const response = await request(app)
       .post("/api/v1/login")
       .send({
-        username: "admin",
-        password: "FleetSec123!"
+        username: TEST_ADMIN_USERNAME,
+        password: TEST_ADMIN_PASSWORD
       });
 
     expect(response.status).toBe(200);

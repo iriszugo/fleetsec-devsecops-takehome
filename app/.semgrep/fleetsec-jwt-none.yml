@@ -1,0 +1,40 @@
+rules:
+  - id: fleetsec-jwt-none-algorithm
+    message: >
+      Insecure JWT configuration detected. Algorithm "none" disables
+      signature verification and may allow token forgery.
+    severity: ERROR
+    languages:
+      - javascript
+
+    pattern-either:
+      - pattern: |
+          jwt.sign($PAYLOAD, "", {
+            ...,
+            algorithm: "none",
+            ...
+          })
+
+      - pattern: |
+          jwt.sign($PAYLOAD, null, {
+            ...,
+            algorithm: "none",
+            ...
+          })
+
+      - pattern: |
+          jwt.decode($TOKEN)
+
+    metadata:
+      category: security
+      technology:
+        - nodejs
+        - jsonwebtoken
+      cwe:
+        - "CWE-345"
+        - "CWE-347"
+      owasp:
+        - "A07:2021-Identification and Authentication Failures"
+      confidence: HIGH
+      impact: HIGH
+      likelihood: HIGH

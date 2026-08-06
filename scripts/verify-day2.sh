@@ -80,24 +80,31 @@ echo -e "${YELLOW}=====================================================${NC}"
 cd "$ROOT_DIR"
 
 echo
+
+
 echo "1. Rama y regresión del Día 1"
 
 CURRENT_BRANCH="$(git branch --show-current)"
 
-if [[ "$CURRENT_BRANCH" == "feature/day2-vapt-scenarios" ]]; then
-  pass "Rama correcta: $CURRENT_BRANCH"
+if [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] || \
+   [[ "$CURRENT_BRANCH" =~ ^feature/day3- ]] || \
+   [[ "$CURRENT_BRANCH" == "main" ]]; then
+
+    pass "Rama válida para regresión: $CURRENT_BRANCH"
+
 else
-  fail "Rama incorrecta: $CURRENT_BRANCH"
+
+    fail "Rama incorrecta: $CURRENT_BRANCH"
+
 fi
 
-if "$ROOT_DIR/scripts/verify-day1.sh" \
-  >"$REPORT_DIR/verify-day1.log" 2>&1; then
-  pass "Regresión Día 1"
+if "$ROOT_DIR/scripts/verify-day1.sh" >/dev/null; then
+    pass "Regresión Día 1"
 else
-  fail "Regresión Día 1"
+    fail "Regresión Día 1"
 fi
 
-echo
+
 echo "2. Dependencias"
 
 if (

@@ -51,17 +51,25 @@ echo -e "${YELLOW}=====================================================${NC}"
 cd "$ROOT_DIR"
 
 echo
+
 echo "1. Validación de rama Git"
 
 CURRENT_BRANCH="$(git branch --show-current)"
 
-if [[ "$CURRENT_BRANCH" == "feature/day1-app-base" ]]; then
-    pass "Rama correcta: $CURRENT_BRANCH"
+if [[ "$CURRENT_BRANCH" =~ ^feature/day1- ]] || \
+   [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] || \
+   [[ "$CURRENT_BRANCH" =~ ^feature/day3- ]] || \
+   [[ "$CURRENT_BRANCH" == "main" ]]; then
+
+    pass "Rama válida para regresión: $CURRENT_BRANCH"
+
 else
+
     fail "Rama incorrecta: $CURRENT_BRANCH"
+
 fi
 
-echo
+
 echo "2. Validación de estructura"
 
 check_file "app/package.json"
@@ -121,14 +129,28 @@ else
 fi
 
 echo
+
+
+echo
 echo "5. Validación Semgrep"
+
+# Compatibilidad con la evolución del laboratorio.
+# Día 1: SQLi estaba en app/src/app.js.
+# Día 2 en adelante: SQLi está aislado en app/lab/vulnerable/sqli.js.
+
+if [[ -f "$APP_DIR/lab/vulnerable/sqli.js" ]]; then
+    SQLI_TARGET="$APP_DIR/lab/vulnerable/sqli.js"
+else
+    SQLI_TARGET="$APP_DIR/src/app.js"
+fi
+
+rm -f "$REPORT_DIR/semgrep-sqli.json"
 
 semgrep scan \
     --config "$APP_DIR/.semgrep/fleetsec-sqli.yml" \
-    "$APP_DIR/src/app.js" \
+    "$SQLI_TARGET" \
     --json \
-    --output "$REPORT_DIR/semgrep-sqli.json" \
-    >/dev/null 2>&1 || true
+    >"$REPORT_DIR/semgrep-sqli.json" 2>/dev/null || true
 
 SQLI_FINDINGS="$(
     jq -r '.results | length' \
@@ -141,12 +163,13 @@ else
     fail "Regla Semgrep SQLi sin hallazgos"
 fi
 
+rm -f "$REPORT_DIR/semgrep-pii-positive.json"
+
 semgrep scan \
     --config "$ROOT_DIR/.semgrep/fleetsec-sensitive-logging.yml" \
     "$APP_DIR/tests/semgrep/pii-logging-positive.js" \
     --json \
-    --output "$REPORT_DIR/semgrep-pii-positive.json" \
-    >/dev/null 2>&1 || true
+    >"$REPORT_DIR/semgrep-pii-positive.json" 2>/dev/null || true
 
 PII_POSITIVE_FINDINGS="$(
     jq -r '.results | length' \
@@ -159,12 +182,13 @@ else
     fail "Caso positivo PII generó $PII_POSITIVE_FINDINGS hallazgos"
 fi
 
+rm -f "$REPORT_DIR/semgrep-pii-negative.json"
+
 semgrep scan \
     --config "$ROOT_DIR/.semgrep/fleetsec-sensitive-logging.yml" \
     "$APP_DIR/tests/semgrep/pii-logging-negative.js" \
     --json \
-    --output "$REPORT_DIR/semgrep-pii-negative.json" \
-    >/dev/null 2>&1 || true
+    >"$REPORT_DIR/semgrep-pii-negative.json" 2>/dev/null || true
 
 PII_NEGATIVE_FINDINGS="$(
     jq -r '.results | length' \
@@ -177,7 +201,9 @@ else
     fail "Caso negativo PII generó $PII_NEGATIVE_FINDINGS hallazgos"
 fi
 
-echo
+
+
+
 echo "6. Validación de secretos"
 
 if gitleaks detect \

@@ -10,13 +10,14 @@ FAIL=0
 
 pass() {
     echo "[PASS] $1"
-    ((PASS++))
+    PASS=$((PASS + 1))
 }
 
 fail() {
     echo "[FAIL] $1"
-    ((FAIL++))
+    FAIL=$((FAIL + 1))
 }
+
 
 echo "======================================================"
 echo " FleetSec — Verificación Funcional del Día 3"
@@ -72,9 +73,12 @@ node -c "$APP_DIR/lab/vulnerable/command-injection.js" >/dev/null \
 && pass "Lab JS válido" \
 || fail "Lab JS"
 
-node -c "$APP_DIR/src/routes/system.js" >/dev/null \
-&& pass "Ruta segura válida" \
-|| fail "Ruta segura"
+if node -c "$APP_DIR/src/routes/system.js" >/dev/null; then
+    pass "Ruta segura"
+else
+    fail "Ruta segura"
+fi
+
 
 #########################################################
 # Jest

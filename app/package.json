@@ -12,7 +12,10 @@
     "sbom": "cyclonedx-npm --output-format JSON --output-file ../reports/sbom/bom.json"
   },
   "dependencies": {
+    "axios": "^1.19.0",
     "express": "^4.21.2",
+    "express-rate-limit": "^8.6.2",
+    "jsonwebtoken": "^9.0.3",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {

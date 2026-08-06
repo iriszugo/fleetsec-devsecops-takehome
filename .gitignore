@@ -1,9 +1,22 @@
-aws/
-awscliv2.zip
-*.zip
-*.tar.gz
-*.deb
-
+# ==========================
 # Local verification artifacts
+# ==========================
+
+# Day 1
 reports/day1-verification/
+
+# Day 2
+reports/day2-verification/
+
+# Trivy local outputs
 trivy-results.json
+
+# Runtime files created by security tests
+app/safe-files/
+
+# SQLite
+*.sqlite
+*.db
+
+# Editor backups
+*~

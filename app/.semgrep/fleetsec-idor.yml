@@ -1,0 +1,45 @@
+rules:
+  - id: fleetsec-idor-direct-object-access
+
+    message: >
+      Possible IDOR detected. Resource is accessed directly using a
+      user-controlled identifier without authorization validation.
+
+    severity: ERROR
+
+    languages:
+      - javascript
+
+    patterns:
+      - pattern: |
+          $PROFILE = $OBJECT[$REQ.params.$ID]
+
+      - pattern-not-inside: |
+          ...
+          const isOwner = ...
+          ...
+          if (!isOwner && !isAdmin) {
+            ...
+          }
+          ...
+
+    metadata:
+      category: security
+
+      technology:
+        - nodejs
+        - express
+
+      cwe:
+        - CWE-639
+
+      owasp:
+        - "A01:2021-Broken Access Control"
+
+      confidence: HIGH
+      impact: HIGH
+      likelihood: HIGH
+
+      references:
+        - "https://cwe.mitre.org/data/definitions/639.html"
+        - "https://owasp.org/Top10/A01_2021-Broken_Access_Control/"

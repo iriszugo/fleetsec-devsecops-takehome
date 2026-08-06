@@ -55,10 +55,10 @@ echo "1. Validación de rama Git"
 
 CURRENT_BRANCH="$(git branch --show-current)"
 
-if [[ "$CURRENT_BRANCH" == "feature/day1-app-base" ]]; then
-    pass "Rama correcta: $CURRENT_BRANCH"
+if [[ "$CURRENT_BRANCH" =~ ^feature/day[1-9][0-9]*- ]]; then
+  pass "Rama válida para regresión: $CURRENT_BRANCH"
 else
-    fail "Rama incorrecta: $CURRENT_BRANCH"
+  fail "Rama inválida para regresión: $CURRENT_BRANCH"
 fi
 
 echo
@@ -121,24 +121,56 @@ else
 fi
 
 echo
+
+
+echo
 echo "5. Validación Semgrep"
 
-semgrep scan \
-    --config "$APP_DIR/.semgrep/fleetsec-sqli.yml" \
-    "$APP_DIR/src/app.js" \
-    --json \
-    --output "$REPORT_DIR/semgrep-sqli.json" \
-    >/dev/null 2>&1 || true
+# Compatibilidad con la evolución del laboratorio.
+# Día 1: SQLi vive en app/src/app.js
+# Día 2+: SQLi se encuentra aislado en app/lab/vulnerable/sqli.js
 
-SQLI_FINDINGS="$(
-    jq -r '.results | length' \
-        "$REPORT_DIR/semgrep-sqli.json" 2>/dev/null || echo 0
-)"
+if [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] || \
+   [[ "$CURRENT_BRANCH" =~ ^feature/day[3-9]- ]] || \
+   [[ "$CURRENT_BRANCH" =~ ^feature/day[1-9][0-9]+- ]]; then
+
+    SQLI_TARGET="$ROOT_DIR/app/lab/vulnerable/sqli.js"
+
+else
+
+    SQLI_TARGET="$ROOT_DIR/app/src/app.js"
+
+fi
+
+rm -f "$REPORT_DIR/semgrep-sqli.json"
+
+semgrep scan \
+    --config "$ROOT_DIR/app/.semgrep/fleetsec-sqli.yml" \
+    "$SQLI_TARGET" \
+    --json \
+    >"$REPORT_DIR/semgrep-sqli.json" 2>/dev/null || true
+
+if [[ -f "$REPORT_DIR/semgrep-sqli.json" ]]; then
+
+    SQLI_FINDINGS="$(
+        jq -r '.results | length' \
+            "$REPORT_DIR/semgrep-sqli.json" 2>/dev/null || echo 0
+    )"
+
+else
+
+    SQLI_FINDINGS=0
+
+fi
 
 if [[ "$SQLI_FINDINGS" -ge 1 ]]; then
+
     pass "Regla Semgrep SQLi detecta CWE-89"
+
 else
+
     fail "Regla Semgrep SQLi sin hallazgos"
+
 fi
 
 semgrep scan \
@@ -154,9 +186,13 @@ PII_POSITIVE_FINDINGS="$(
 )"
 
 if [[ "$PII_POSITIVE_FINDINGS" -eq 2 ]]; then
+
     pass "Caso positivo PII genera 2 hallazgos"
+
 else
+
     fail "Caso positivo PII generó $PII_POSITIVE_FINDINGS hallazgos"
+
 fi
 
 semgrep scan \
@@ -172,10 +208,16 @@ PII_NEGATIVE_FINDINGS="$(
 )"
 
 if [[ "$PII_NEGATIVE_FINDINGS" -eq 0 ]]; then
+
     pass "Caso negativo PII sin falsos positivos"
+
 else
+
     fail "Caso negativo PII generó $PII_NEGATIVE_FINDINGS hallazgos"
+
 fi
+
+
 
 echo
 echo "6. Validación de secretos"
@@ -187,9 +229,13 @@ if gitleaks detect \
     --report-format json \
     --report-path "$REPORT_DIR/gitleaks.json" \
     >/dev/null 2>&1; then
+
     pass "Gitleaks: cero secretos"
+
 else
+
     fail "Gitleaks detectó posibles secretos"
+
 fi
 
 echo
@@ -197,42 +243,65 @@ echo "7. Validación Docker"
 
 if docker build \
     -t "$IMAGE_NAME" \
-    "$APP_DIR" >"$REPORT_DIR/docker-build.log" 2>&1; then
+    "$APP_DIR" \
+    >"$REPORT_DIR/docker-build.log" 2>&1; then
+
     pass "Construcción de imagen Docker"
+
 else
+
     fail "Construcción de imagen Docker"
+
 fi
 
-if docker run -d \
+docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
+
+if docker run \
+    -d \
     --name "$CONTAINER_NAME" \
     -p 127.0.0.1:3001:3000 \
-    "$IMAGE_NAME" >"$REPORT_DIR/container-id.txt" 2>&1; then
+    "$IMAGE_NAME" \
+    >"$REPORT_DIR/docker-run.log" 2>&1; then
+
     pass "Inicio del contenedor"
+
 else
+
     fail "Inicio del contenedor"
+
 fi
 
 sleep 5
 
-if curl --fail --silent \
+if curl \
+    --fail \
+    --silent \
     http://127.0.0.1:3001/health \
-    >"$REPORT_DIR/health.json"; then
+    >"$REPORT_DIR/health-response.json" 2>&1; then
+
     pass "Endpoint /health"
+
 else
+
     fail "Endpoint /health"
+
 fi
 
 CONTAINER_USER="$(
-    docker inspect "$CONTAINER_NAME" \
-        --format='{{.Config.User}}' 2>/dev/null || true
+    docker inspect \
+        --format '{{.Config.User}}' \
+        "$CONTAINER_NAME" \
+        2>/dev/null || true
 )"
 
-if [[ -n "$CONTAINER_USER" &&
-      "$CONTAINER_USER" != "root" &&
-      "$CONTAINER_USER" != "0" ]]; then
-    pass "Contenedor ejecuta como usuario no root: $CONTAINER_USER"
+if [[ "$CONTAINER_USER" == "nodeapp" ]]; then
+
+    pass "Contenedor ejecuta como usuario no root: nodeapp"
+
 else
-    fail "Contenedor ejecuta como root o sin usuario definido"
+
+    fail "Usuario del contenedor incorrecto: ${CONTAINER_USER:-vacío}"
+
 fi
 
 echo
@@ -241,49 +310,74 @@ echo "8. Validación Trivy"
 if trivy fs \
     --format json \
     --output "$REPORT_DIR/trivy-results.json" \
-    "$APP_DIR" >/dev/null 2>&1; then
+    "$APP_DIR" \
+    >/dev/null 2>&1; then
+
     pass "Reporte Trivy filesystem"
+
 else
-    fail "Escaneo Trivy filesystem"
+
+    fail "Reporte Trivy filesystem"
+
 fi
 
 if "$ROOT_DIR/scripts/evaluate-trivy-sca.sh" \
     "$REPORT_DIR/trivy-results.json" \
     "$APP_DIR/package.json" \
     >"$REPORT_DIR/trivy-gate.log" 2>&1; then
+
     pass "Quality Gate Trivy SCA"
+
 else
+
     fail "Quality Gate Trivy SCA"
+
 fi
 
 echo
 echo "9. Validación de scripts y workflow"
 
 if bash -n "$ROOT_DIR/scripts/evaluate-trivy-sca.sh"; then
+
     pass "Sintaxis evaluate-trivy-sca.sh"
+
 else
+
     fail "Sintaxis evaluate-trivy-sca.sh"
+
 fi
 
-if grep -qE '^[[:space:]]+security-summary:' \
+if grep -q "security-summary" \
     "$ROOT_DIR/.github/workflows/devsecops-pipeline.yml"; then
+
     pass "Job security-summary presente"
+
 else
+
     fail "Job security-summary ausente"
+
 fi
 
-if grep -q "semgrep-sarif" \
+if grep -q "semgrep-results.sarif" \
     "$ROOT_DIR/.github/workflows/devsecops-pipeline.yml"; then
+
     pass "Artefacto Semgrep SARIF configurado"
+
 else
-    fail "Artefacto Semgrep SARIF ausente"
+
+    fail "Artefacto Semgrep SARIF no configurado"
+
 fi
 
 if grep -q "evaluate-trivy-sca.sh" \
     "$ROOT_DIR/.github/workflows/devsecops-pipeline.yml"; then
+
     pass "Quality Gate Trivy integrado al pipeline"
+
 else
-    fail "Quality Gate Trivy ausente del pipeline"
+
+    fail "Quality Gate Trivy no integrado al pipeline"
+
 fi
 
 echo
@@ -293,8 +387,10 @@ echo "FAIL: $FAIL_COUNT"
 echo -e "${YELLOW}=====================================================${NC}"
 
 if [[ "$FAIL_COUNT" -gt 0 ]]; then
+
     echo -e "${RED}RESULTADO: VERIFICACIÓN DEL DÍA 1 FALLIDA${NC}"
     exit 1
+
 fi
 
 echo -e "${GREEN}RESULTADO: VERIFICACIÓN DEL DÍA 1 APROBADA${NC}"

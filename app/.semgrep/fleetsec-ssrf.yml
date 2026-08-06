@@ -1,0 +1,28 @@
+rules:
+  - id: fleetsec-ssrf-unvalidated-request
+    message: >
+      Possible SSRF detected. A user-controlled URL is passed directly
+      to an outbound HTTP request without validation.
+    severity: ERROR
+    languages:
+      - javascript
+
+    patterns:
+      - pattern: axios.get($URL, ...)
+      - pattern-inside: |
+          $URL = $REQ.query.$PARAM;
+          ...
+
+    metadata:
+      category: security
+      technology:
+        - nodejs
+        - express
+        - axios
+      cwe:
+        - "CWE-918"
+      owasp:
+        - "A10:2021-Server-Side Request Forgery"
+      confidence: HIGH
+      impact: HIGH
+      likelihood: HIGH

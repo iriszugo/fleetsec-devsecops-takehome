@@ -1,0 +1,18 @@
+
+> fleetsec-vulnerable-app@1.0.0 test
+> jest --runInBand --runInBand
+
+PASS tests/security/rate-limit.test.js
+PASS tests/security/idor.test.js
+PASS tests/security/jwt.test.js
+PASS test/health.test.js
+PASS tests/security/ssrf.test.js
+PASS tests/security/path-traversal.test.js
+PASS tests/security/command-injection.test.js
+PASS tests/security/pii-sanitizer.test.js
+
+Test Suites: 8 passed, 8 total
+Tests:       19 passed, 19 total
+Snapshots:   0 total
+Time:        0.825 s, estimated 1 s
+Ran all test suites.

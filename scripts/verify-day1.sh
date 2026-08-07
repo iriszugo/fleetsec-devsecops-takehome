@@ -201,30 +201,36 @@ else
 fi
 
 
+
+
+
 echo "6. Validación de secretos"
 
 GITLEAKS_REPORT="$REPORT_DIR/gitleaks.json"
 
-if gitleaks detect \
+gitleaks detect \
     --source "$ROOT_DIR/app" \
     --no-banner \
     --redact \
     --report-format json \
     --report-path "$GITLEAKS_REPORT" \
-    >/dev/null 2>&1; then
+    >/dev/null 2>&1 || true
 
-    pass "Gitleaks: cero secretos"
+if [[ -f "$GITLEAKS_REPORT" ]]; then
 
-else
+    FINDINGS=$(jq 'length' "$GITLEAKS_REPORT" 2>/dev/null || echo "unknown")
 
-    if [[ -f "$GITLEAKS_REPORT" ]]; then
-        FINDINGS=$(jq '. | length' "$GITLEAKS_REPORT" 2>/dev/null || echo "unknown")
+    if [[ "$FINDINGS" == "0" ]]; then
+        pass "Gitleaks: cero secretos"
     else
-        FINDINGS="unknown"
+        fail "Gitleaks detectó posibles secretos ($FINDINGS hallazgos)"
     fi
 
-    fail "Gitleaks detectó posibles secretos ($FINDINGS hallazgos)"
+else
+    fail "Gitleaks no generó reporte"
 fi
+
+
 
 
 

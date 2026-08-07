@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 
 set -uo pipefail
@@ -292,7 +293,55 @@ if trivy fs \
   --format json \
   --output "$REPORT_DIR/trivy-results.json" \
   "$APP_DIR" >/dev/null 2>&1; then
-  pass "Trivy filesystem"
+
+
+
+GITLEAKS_REPORT="$REPORT_DIR/gitleaks.json"
+
+gitleaks detect \
+    --source "$ROOT_DIR/app" \
+    --no-banner \
+    --redact \
+    --report-format json \
+    --report-path "$GITLEAKS_REPORT" \
+    >/dev/null 2>&1 || true
+
+if [[ -f "$GITLEAKS_REPORT" ]]; then
+
+    FINDINGS=$(jq 'length' "$GITLEAKS_REPORT" 2>/dev/null || echo "unknown")
+
+    if [[ "$FINDINGS" == "0" ]]; then
+        pass "Gitleaks: cero secretos"
+    else
+        fail "Gitleaks detectó posibles secretos ($FINDINGS hallazgos)"
+    fi
+
+else
+
+    fail "Gitleaks no generó reporte"
+
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 else
   fail "Trivy filesystem"
 fi

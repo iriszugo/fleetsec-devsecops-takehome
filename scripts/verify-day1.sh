@@ -55,21 +55,18 @@ echo
 echo "1. Validación de rama Git"
 
 if [[ "${FLEETSEC_REGRESSION_MODE:-0}" == "1" ]]; then
-    pass "Validación de rama omitida en modo regresión"
+    pass "Modo regresión: validación de rama no aplica"
 else
-    CURRENT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-$(git branch --show-current)}}"
+    CURRENT_BRANCH="$(git branch --show-current)"
 
-    if [[ "$CURRENT_BRANCH" =~ ^feature/day1- ]] || \
-       [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] || \
-       [[ "$CURRENT_BRANCH" =~ ^feature/day3- ]] || \
-       [[ "$CURRENT_BRANCH" =~ ^feature/day4- ]] || \
-       [[ "$CURRENT_BRANCH" == "main" ]]; then
+    if [[ "$CURRENT_BRANCH" =~ ^feature/day1- ]] ||        [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] ||        [[ "$CURRENT_BRANCH" =~ ^feature/day3- ]] ||        [[ "$CURRENT_BRANCH" =~ ^feature/day4- ]] ||        [[ "$CURRENT_BRANCH" == "main" ]]; then
         pass "Rama válida: $CURRENT_BRANCH"
     else
         fail "Rama incorrecta: $CURRENT_BRANCH"
     fi
 fi
 
+echo
 
 echo "2. Validación de estructura"
 

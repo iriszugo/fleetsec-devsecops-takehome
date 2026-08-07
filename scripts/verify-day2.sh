@@ -85,26 +85,24 @@ echo
 echo "1. Rama y regresión del Día 1"
 
 if [[ "${FLEETSEC_REGRESSION_MODE:-0}" == "1" ]]; then
-    pass "Validación de rama omitida en modo regresión"
+    pass "Modo regresión: validación de rama no aplica"
 else
-    CURRENT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-$(git branch --show-current)}}"
+    CURRENT_BRANCH="$(git branch --show-current)"
 
-    if [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] || \
-       [[ "$CURRENT_BRANCH" =~ ^feature/day3- ]] || \
-       [[ "$CURRENT_BRANCH" =~ ^feature/day4- ]] || \
-       [[ "$CURRENT_BRANCH" == "main" ]]; then
+    if [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] ||        [[ "$CURRENT_BRANCH" =~ ^feature/day3- ]] ||        [[ "$CURRENT_BRANCH" =~ ^feature/day4- ]] ||        [[ "$CURRENT_BRANCH" == "main" ]]; then
         pass "Rama válida: $CURRENT_BRANCH"
     else
         fail "Rama incorrecta: $CURRENT_BRANCH"
     fi
 fi
 
-if "$ROOT_DIR/scripts/verify-day1.sh" >/dev/null; then
+if FLEETSEC_REGRESSION_MODE=1 "$ROOT_DIR/scripts/verify-day1.sh" >/dev/null; then
     pass "Regresión Día 1"
 else
     fail "Regresión Día 1"
 fi
 
+echo
 
 echo "2. Dependencias"
 

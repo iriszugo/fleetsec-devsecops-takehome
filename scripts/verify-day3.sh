@@ -29,7 +29,7 @@ export FLEETSEC_REGRESSION_MODE=1
 # Regresión Día 1
 #########################################################
 
-if "$ROOT_DIR/scripts/verify-day1.sh" >/dev/null; then
+if FLEETSEC_REGRESSION_MODE=1 bash "$ROOT_DIR/scripts/verify-day1.sh" >/dev/null; then
     pass "Regresión Día 1"
 else
     fail "Regresión Día 1"
@@ -39,7 +39,7 @@ fi
 # Regresión Día 2
 #########################################################
 
-if "$ROOT_DIR/scripts/verify-day2.sh" >/dev/null; then
+if FLEETSEC_REGRESSION_MODE=1 bash "$ROOT_DIR/scripts/verify-day2.sh" >/dev/null; then
     pass "Regresión Día 2"
 else
     fail "Regresión Día 2"

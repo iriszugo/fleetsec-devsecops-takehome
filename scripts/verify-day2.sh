@@ -85,7 +85,7 @@ echo
 echo "1. Rama y regresión del Día 1"
 
 if [[ "${FLEETSEC_REGRESSION_MODE:-0}" == "1" ]]; then
-    pass "Modo regresión: validación de rama no aplica"
+    pass "Modo regresión: validación de rama omitida"
 else
     CURRENT_BRANCH="$(git branch --show-current)"
 
@@ -96,7 +96,7 @@ else
     fi
 fi
 
-if FLEETSEC_REGRESSION_MODE=1 "$ROOT_DIR/scripts/verify-day1.sh" >/dev/null; then
+if FLEETSEC_REGRESSION_MODE=1 bash "$ROOT_DIR/scripts/verify-day1.sh" >/dev/null; then
     pass "Regresión Día 1"
 else
     fail "Regresión Día 1"

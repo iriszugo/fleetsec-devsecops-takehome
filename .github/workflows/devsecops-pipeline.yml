@@ -216,7 +216,9 @@ jobs:
           chmod +x scripts/evaluate-trivy-sca.sh
 
       - name: Execute Day 3 verification
-        run: ./scripts/verify-day3.sh
+        env:
+          FLEETSEC_REGRESSION_MODE: "1"
+        run: bash ./scripts/verify-day3.sh
 
   security-summary:
     name: Security Gate Summary

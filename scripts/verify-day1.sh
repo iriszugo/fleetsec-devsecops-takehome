@@ -55,7 +55,7 @@ echo
 echo "1. Validación de rama Git"
 
 if [[ "${FLEETSEC_REGRESSION_MODE:-0}" == "1" ]]; then
-    pass "Modo regresión: validación de rama no aplica"
+    pass "Modo regresión: validación de rama omitida"
 else
     CURRENT_BRANCH="$(git branch --show-current)"
 

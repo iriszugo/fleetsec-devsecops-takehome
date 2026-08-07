@@ -210,21 +210,9 @@ jobs:
       
       - name: Install Gitleaks
         run: |
-          curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/scripts/install.sh \
-            | sudo sh -s -- -b /usr/local/bin v8.24.2
+          curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/scripts/install.sh             | sudo sh -s -- -b /usr/local/bin v8.24.2
           echo "/usr/local/bin" >> $GITHUB_PATH
           gitleaks version
-
-
-
-
-
-
-        run: |
-          chmod +x scripts/verify-day1.sh
-          chmod +x scripts/verify-day2.sh
-          chmod +x scripts/verify-day3.sh
-          chmod +x scripts/evaluate-trivy-sca.sh
 
       - name: Execute Day 3 verification
         env:

@@ -1,30 +1,14 @@
-# IR-PLAYBOOK-T0200
-# AWS Active Breach Containment Playbook
+# PLAYBOOK DE CONTENCIÓN DE EMERGENCIA AWS CLI (INCIDENTE T+02:00)
 
-## 1. Objetivo
+## 1. Contención IAM de Emergencia
+aws iam detach-user-policy --user-name svc-monitoring --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
+aws iam put-user-policy --user-name svc-monitoring --policy-name DenyAllExplicit --policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"*","Resource":"*"}]}'
 
-Procedimiento de contención operativa para incidente activo de seguridad AWS
-(T+02:00), incluyendo aislamiento IAM, S3, EC2, ECS y validación CloudTrail.
+## 2. Aislamiento de Red EC2
+aws ec2 modify-instance-attribute --instance-id i-0abc1234def56789 --groups sg-quarantine-isolation-id
 
-Escenario:
+## 3. Interrupción de Tarea Rogue en ECS Cluster
+aws ecs stop-task --cluster fleetsec-prod-cluster --task arn:aws:ecs:us-east-1:123456789012:task/fleetsec-prod-cluster/abc123xyz
 
-- Usuario comprometido: svc-monitoring
-- IP origen sospechosa: 185.220.101.22
-- Riesgo identificado:
-  - Escalamiento IAM
-  - Exfiltración S3
-  - Persistencia
-  - Ejecución de infraestructura no autorizada
-
-
----
-
-# 2. IAM Containment
-
-## 2.1 Identificación usuario comprometido
-
-Validación:
-
-```bash
-aws iam get-user \
---user-name svc-monitoring
+## 4. Preservación Forense EBS
+aws ec2 create-snapshot --volume-id vol-0abc1234def56789 --description "Forensic Snapshot T+02:00"

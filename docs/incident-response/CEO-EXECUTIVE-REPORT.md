@@ -1,60 +1,9 @@
-# Executive Incident Report
-# Incident INC-2026-001
+# INFORME EJECUTIVO C-LEVEL — BRECHA DE SEGURIDAD FLEETSEC
 
-## FleetSec S.A.S.
-## Informe Ejecutivo C-Level
+## Cumplimiento Regulatorio y Notificación Legal
+Tras la confirmación de la exfiltración de datos personales, la organización procederá con la notificación oficial del incidente a la Superintendencia de Industria y Comercio (SIC) dentro del término legal de 15 días hábiles establecido bajo la Ley 1581 de 2012.
 
----
-
-# 1. Resumen Ejecutivo
-
-Durante el monitoreo de seguridad de la plataforma FleetSec se identificó un
-incidente de ciberseguridad asociado al compromiso de una identidad IAM en AWS.
-
-El evento involucró acceso no autorizado a recursos cloud, elevación de
-privilegios y actividad compatible con extracción no autorizada de información.
-
-El equipo de respuesta ejecutó acciones de contención orientadas a preservar
-la operación, proteger evidencia digital y reducir el riesgo de impacto
-adicional.
-
-Estado actual:
-
-- Incidente contenido.
-- Credenciales comprometidas aisladas.
-- Recursos críticos bajo revisión.
-- Evidencias preservadas para análisis forense.
-
-
----
-
-# 2. Impacto Identificado
-
-## Datos potencialmente comprometidos
-
-Volumen estimado:
-
-**45.7 GB de información asociada a conductores**
-
-Activo afectado:
-
-- Bucket S3: fleetpay-prod-drivers
-
-Riesgos identificados:
-
-- Exposición de información personal.
-- Riesgo regulatorio.
-- Riesgo reputacional.
-- Posible afectación a titulares de información.
-
-
----
-
-# 3. Vector Inicial del Incidente
-
-## Compromiso de identidad IAM
-
-Identidad involucrada:
-
-```text
-svc-monitoring
+## Plan de Remediación Post-Incidente
+- **P1 (Inmediato - 24h)**: Contención de credenciales comprometidas, revocación de accesos IAM y aislamiento de la infraestructura EC2/ECS.
+- **P2 (Corto Plazo - 7 días)**: Hardening de la infraestructura mediante módulos HCL Terraform, implementación de reglas WAFv2 y remediación del VAPT.
+- **P3 (Estratégico - 30 días)**: Despliegue de capacidades de detección centralizada mediante AWS Config, SecurityHub y alineación al SGSI ISO 27001.

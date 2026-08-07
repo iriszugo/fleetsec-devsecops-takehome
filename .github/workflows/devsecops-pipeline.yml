@@ -25,15 +25,10 @@ jobs:
         working-directory: app
 
     steps:
-
-
-- name: Checkout repository
-  uses: actions/checkout@v4
-  with:
-    fetch-depth: 0
-
-
-
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -66,11 +61,23 @@ jobs:
     name: Gitleaks Secret Scan
     runs-on: ubuntu-latest
 
+
+
     steps:
-      - name: Checkout complete Git history
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup Node.js
+
+
+
+
+
+
+
+
 
       - name: Scan repository for secrets
         uses: gitleaks/gitleaks-action@v2

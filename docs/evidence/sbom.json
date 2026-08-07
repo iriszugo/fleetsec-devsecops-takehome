@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.7.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
-  "serialNumber": "urn:uuid:121d7d2d-c234-42f3-8a01-398dc55dfa8c",
+  "serialNumber": "urn:uuid:9f8f3084-38e1-423d-b50b-a98c76781272",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-08-07T20:20:44+00:00",
+    "timestamp": "2026-08-07T20:24:28+00:00",
     "tools": {
       "components": [
         {
@@ -20,7 +20,7 @@
       ]
     },
     "component": {
-      "bom-ref": "a732f89a-e77c-4b97-a481-4403ab4a155b",
+      "bom-ref": "18ffb28f-a399-4df1-9aad-668677074ae8",
       "type": "application",
       "name": ".",
       "properties": [
@@ -33,7 +33,7 @@
   },
   "components": [
     {
-      "bom-ref": "df471a70-fa28-4a1a-b294-3c8173e090b6",
+      "bom-ref": "bb96b353-96f3-457d-bcf7-143d0b4ecd92",
       "type": "application",
       "name": "app/package-lock.json",
       "properties": [
@@ -3671,13 +3671,13 @@
   ],
   "dependencies": [
     {
-      "ref": "a732f89a-e77c-4b97-a481-4403ab4a155b",
+      "ref": "18ffb28f-a399-4df1-9aad-668677074ae8",
       "dependsOn": [
-        "df471a70-fa28-4a1a-b294-3c8173e090b6"
+        "bb96b353-96f3-457d-bcf7-143d0b4ecd92"
       ]
     },
     {
-      "ref": "df471a70-fa28-4a1a-b294-3c8173e090b6",
+      "ref": "bb96b353-96f3-457d-bcf7-143d0b4ecd92",
       "dependsOn": [
         "pkg:npm/axios@1.19.0",
         "pkg:npm/express-rate-limit@8.6.2",

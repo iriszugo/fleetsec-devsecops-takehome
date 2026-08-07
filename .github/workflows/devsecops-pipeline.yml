@@ -207,13 +207,19 @@ jobs:
             https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
             | sudo sh -s -- -b /usr/local/bin v0.73.0
 
+      
       - name: Install Gitleaks
         run: |
-          curl -sSfL \
-            https://raw.githubusercontent.com/gitleaks/gitleaks/master/scripts/install.sh \
+          curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/scripts/install.sh \
             | sudo sh -s -- -b /usr/local/bin v8.24.2
+          echo "/usr/local/bin" >> $GITHUB_PATH
+          gitleaks version
 
-      - name: Make verification scripts executable
+
+
+
+
+
         run: |
           chmod +x scripts/verify-day1.sh
           chmod +x scripts/verify-day2.sh

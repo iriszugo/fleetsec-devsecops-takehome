@@ -258,32 +258,52 @@ else
   fail "Suite Jest completa"
 fi
 
+
+
 echo
 echo "9. Quality Gates existentes"
 
 
 GITLEAKS_REPORT="$REPORT_DIR/gitleaks.json"
 
-if gitleaks detect \
-  --source "$ROOT_DIR/app" \
-  --no-banner \
-  --redact \
-  --report-format json \
-  --report-path "$GITLEAKS_REPORT" \
-  >/dev/null 2>&1; then
+gitleaks detect \
+    --source "$ROOT_DIR/app" \
+    --no-banner \
+    --redact \
+    --report-format json \
+    --report-path "$GITLEAKS_REPORT" \
+    >/dev/null 2>&1 || true
 
-  pass "Gitleaks: cero secretos"
+if [[ -f "$GITLEAKS_REPORT" ]]; then
+
+    FINDINGS=$(jq 'length' "$GITLEAKS_REPORT" 2>/dev/null || echo "unknown")
+
+    if [[ "$FINDINGS" == "0" ]]; then
+        pass "Gitleaks: cero secretos"
+    else
+        fail "Gitleaks detectó posibles secretos ($FINDINGS hallazgos)"
+    fi
 
 else
 
-  if [[ -f "$GITLEAKS_REPORT" ]]; then
-    FINDINGS=$(jq '. | length' "$GITLEAKS_REPORT" 2>/dev/null || echo "unknown")
-  else
-    FINDINGS="unknown"
-  fi
+    fail "Gitleaks no generó reporte"
 
-  fail "Gitleaks detectó posibles secretos ($FINDINGS hallazgos)"
 fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

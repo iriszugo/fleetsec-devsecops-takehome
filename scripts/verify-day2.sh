@@ -84,7 +84,7 @@ echo
 
 echo "1. Rama y regresión del Día 1"
 
-CURRENT_BRANCH="$(git branch --show-current)"
+CURRENT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-$(git branch --show-current)}}"
 
 if [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] || \
    [[ "$CURRENT_BRANCH" =~ ^feature/day3- ]] || \

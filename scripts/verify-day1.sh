@@ -54,7 +54,7 @@ echo
 
 echo "1. Validación de rama Git"
 
-CURRENT_BRANCH="$(git branch --show-current)"
+CURRENT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-$(git branch --show-current)}}"
 
 if [[ "$CURRENT_BRANCH" =~ ^feature/day1- ]] || \
    [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] || \

@@ -88,6 +88,7 @@ CURRENT_BRANCH="$(git branch --show-current)"
 
 if [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] || \
    [[ "$CURRENT_BRANCH" =~ ^feature/day3- ]] || \
+   [[ "$CURRENT_BRANCH" =~ ^feature/day4- ]] || \
    [[ "$CURRENT_BRANCH" == "main" ]]; then
 
     pass "Rama válida para regresión: $CURRENT_BRANCH"

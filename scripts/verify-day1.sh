@@ -8,6 +8,13 @@ REPORT_DIR="$ROOT_DIR/reports/day1-verification"
 IMAGE_NAME="fleetsec-app:day1-verification"
 CONTAINER_NAME="fleetsec-day1-verification"
 
+
+
+source "$ROOT_DIR/scripts/lib/gitleaks-check.sh"
+
+
+
+
 PASS_COUNT=0
 FAIL_COUNT=0
 
@@ -15,6 +22,12 @@ GREEN="\033[0;32m"
 RED="\033[0;31m"
 YELLOW="\033[1;33m"
 NC="\033[0m"
+
+
+
+
+
+
 
 mkdir -p "$REPORT_DIR"
 
@@ -206,28 +219,10 @@ fi
 
 echo "6. Validación de secretos"
 
-GITLEAKS_REPORT="$REPORT_DIR/gitleaks.json"
-
-gitleaks detect \
-    --source "$ROOT_DIR/app" \
-    --no-banner \
-    --redact \
-    --report-format json \
-    --report-path "$GITLEAKS_REPORT" \
-    >/dev/null 2>&1 || true
-
-if [[ -f "$GITLEAKS_REPORT" ]]; then
-
-    FINDINGS=$(jq 'length' "$GITLEAKS_REPORT" 2>/dev/null || echo "unknown")
-
-    if [[ "$FINDINGS" == "0" ]]; then
-        pass "Gitleaks: cero secretos"
-    else
-        fail "Gitleaks detectó posibles secretos ($FINDINGS hallazgos)"
-    fi
-
+if gitleaks_check "$ROOT_DIR/app" "$REPORT_DIR/gitleaks.json"; then
+    pass "Gitleaks: cero secretos"
 else
-    fail "Gitleaks no generó reporte"
+    fail "Gitleaks validación fallida"
 fi
 
 
@@ -240,8 +235,11 @@ fi
 
 
 
-echo "7. Validación Docker"
 
+
+
+
+echo "7. Validación Docker"
 if docker build \
     -t "$IMAGE_NAME" \
     "$APP_DIR" >"$REPORT_DIR/docker-build.log" 2>&1; then

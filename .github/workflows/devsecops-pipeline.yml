@@ -69,15 +69,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-
-
-
-
-
-
-
-
 
       - name: Scan repository for secrets
         uses: gitleaks/gitleaks-action@v2

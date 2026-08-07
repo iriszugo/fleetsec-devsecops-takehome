@@ -211,7 +211,6 @@ if gitleaks detect \
     --redact \
     --report-format json \
     --report-path "$GITLEAKS_REPORT" \
-    --exit-code 1 \
     >/dev/null 2>&1; then
 
     pass "Gitleaks: cero secretos"

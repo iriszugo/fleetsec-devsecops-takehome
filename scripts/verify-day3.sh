@@ -29,21 +29,35 @@ export FLEETSEC_REGRESSION_MODE=1
 # Regresión Día 1
 #########################################################
 
-if FLEETSEC_REGRESSION_MODE=1 bash "$ROOT_DIR/scripts/verify-day1.sh" >/dev/null; then
+DAY1_LOG="$(mktemp)"
+
+if FLEETSEC_REGRESSION_MODE=1 bash "$ROOT_DIR/scripts/verify-day1.sh" >"$DAY1_LOG" 2>&1; then
     pass "Regresión Día 1"
 else
     fail "Regresión Día 1"
+    echo "===== LOG REGRESIÓN DÍA 1 ====="
+    cat "$DAY1_LOG"
 fi
+
+rm -f "$DAY1_LOG"
+
 
 #########################################################
 # Regresión Día 2
 #########################################################
 
-if FLEETSEC_REGRESSION_MODE=1 bash "$ROOT_DIR/scripts/verify-day2.sh" >/dev/null; then
+DAY2_LOG="$(mktemp)"
+
+if FLEETSEC_REGRESSION_MODE=1 bash "$ROOT_DIR/scripts/verify-day2.sh" >"$DAY2_LOG" 2>&1; then
     pass "Regresión Día 2"
 else
     fail "Regresión Día 2"
+    echo "===== LOG REGRESIÓN DÍA 2 ====="
+    cat "$DAY2_LOG"
 fi
+
+rm -f "$DAY2_LOG"
+
 
 #########################################################
 # Archivos

@@ -15,10 +15,12 @@ gitleaks_check() {
         --redact \
         --report-format json \
         --report-path "$REPORT_FILE" \
-        >/dev/null 2>&1 || true
+        >"${REPORT_FILE}.log" 2>&1 || true
 
     if [[ ! -f "$REPORT_FILE" ]]; then
         echo "[FAIL] Gitleaks no generó reporte"
+        echo "----- Gitleaks debug -----"
+        cat "${REPORT_FILE}.log" || true
         return 1
     fi
 

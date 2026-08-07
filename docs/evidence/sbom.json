@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.7.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
-  "serialNumber": "urn:uuid:9f8f3084-38e1-423d-b50b-a98c76781272",
+  "serialNumber": "urn:uuid:9d97905c-4196-4328-bf57-b447a023284a",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-08-07T20:24:28+00:00",
+    "timestamp": "2026-08-07T20:24:55+00:00",
     "tools": {
       "components": [
         {
@@ -20,7 +20,7 @@
       ]
     },
     "component": {
-      "bom-ref": "18ffb28f-a399-4df1-9aad-668677074ae8",
+      "bom-ref": "d96f4d75-bd81-474b-9b69-17e6865314df",
       "type": "application",
       "name": ".",
       "properties": [
@@ -33,7 +33,7 @@
   },
   "components": [
     {
-      "bom-ref": "bb96b353-96f3-457d-bcf7-143d0b4ecd92",
+      "bom-ref": "08b05caa-4d2b-4712-8903-c1818b367fe8",
       "type": "application",
       "name": "app/package-lock.json",
       "properties": [
@@ -3671,13 +3671,7 @@
   ],
   "dependencies": [
     {
-      "ref": "18ffb28f-a399-4df1-9aad-668677074ae8",
-      "dependsOn": [
-        "bb96b353-96f3-457d-bcf7-143d0b4ecd92"
-      ]
-    },
-    {
-      "ref": "bb96b353-96f3-457d-bcf7-143d0b4ecd92",
+      "ref": "08b05caa-4d2b-4712-8903-c1818b367fe8",
       "dependsOn": [
         "pkg:npm/axios@1.19.0",
         "pkg:npm/express-rate-limit@8.6.2",
@@ -3685,6 +3679,12 @@
         "pkg:npm/helmet@8.3.0",
         "pkg:npm/jsonwebtoken@9.0.3",
         "pkg:npm/sqlite3@6.0.1"
+      ]
+    },
+    {
+      "ref": "d96f4d75-bd81-474b-9b69-17e6865314df",
+      "dependsOn": [
+        "08b05caa-4d2b-4712-8903-c1818b367fe8"
       ]
     },
     {

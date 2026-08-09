@@ -118,7 +118,29 @@ PASS
 
 ---
 
-## 9. References
+
+## 9. Malicious Payload Rejection Validation
+
+The remediated SQL query rejects malicious SQL injection payloads by using
+parameterized queries instead of concatenating user-controlled input.
+
+Security validation confirms:
+
+- malicious SQL injection payload -> rejected;
+- unauthorized query manipulation -> rejected;
+- legitimate query -> accepted successfully.
+
+Evidence:
+
+`app/tests/semgrep/sqli-positive.js`
+
+`app/tests/semgrep/sqli-negative.js`
+
+Status: **MITIGATED AND VERIFIED**
+
+
+
+## 10. References
 
 - https://owasp.org/www-community/attacks/SQL_Injection
 - https://cwe.mitre.org/data/definitions/89.html

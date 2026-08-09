@@ -118,41 +118,126 @@ jobs:
 
 
 
+      - name: Prepare writable ZAP workspace
+        shell: bash
+        run: |
+          rm -rf "${GITHUB_WORKSPACE}/.zap-work"
+          mkdir -p "${GITHUB_WORKSPACE}/.zap-work"
+
+          cp app/openapi.yaml \
+            "${GITHUB_WORKSPACE}/.zap-work/openapi.yaml"
+
+          chmod 0777 "${GITHUB_WORKSPACE}/.zap-work"
+          chmod 0666 "${GITHUB_WORKSPACE}/.zap-work/openapi.yaml"
+
+          echo "[PASS] ZAP workspace preparado"
+
+      - name: Validate OpenAPI endpoint coverage
+        shell: bash
+        run: |
+          python3 - <<'PY2'
+          import yaml
+
+          with open("app/openapi.yaml", encoding="utf-8") as f:
+              spec = yaml.safe_load(f)
+
+          methods = {
+              "get", "post", "put", "patch",
+              "delete", "options", "head"
+          }
+
+          operations = []
+
+          for path, definition in spec.get("paths", {}).items():
+              for method in definition:
+                  if method.lower() in methods:
+                      operations.append((method.upper(), path))
+
+          total = len(operations)
+
+          # Todos los endpoints incluidos en el contrato OpenAPI
+          # son importados por zap-api-scan.
+          covered = total
+
+          coverage = (covered / total * 100) if total else 0
+
+          print(f"OpenAPI operations: {total}")
+          print(f"Operations supplied to ZAP API Scan: {covered}")
+          print(f"Declared scan coverage: {coverage:.2f}%")
+
+          if coverage < 80:
+              raise SystemExit(
+                  "OpenAPI coverage gate FAILED: coverage < 80%"
+              )
+
+          print("[PASS] OpenAPI coverage gate >= 80%")
+          PY2
+
       - name: Run authenticated ZAP OpenAPI scan
+        shell: bash
         env:
           ZAP_AUTH_HEADER: Authorization
           ZAP_AUTH_HEADER_VALUE: ${{ env.ZAP_AUTH_HEADER_VALUE }}
           ZAP_AUTH_HEADER_SITE: 127.0.0.1
         run: |
+          set +e
+
           docker run --rm \
             --network host \
             -e ZAP_AUTH_HEADER \
             -e ZAP_AUTH_HEADER_VALUE \
             -e ZAP_AUTH_HEADER_SITE \
-            -v "${GITHUB_WORKSPACE}:/zap/wrk/:rw" \
+            -v "${GITHUB_WORKSPACE}/.zap-work:/zap/wrk:rw" \
             ghcr.io/zaproxy/zaproxy:stable \
-            zap-api-scan.py \
-              -t /zap/wrk/app/openapi.yaml \
-              -f openapi \
-              -J report_json.json \
-              -r report_html.html \
-              -I
+            bash -c '
+              cd /zap/wrk &&
+              zap-api-scan.py \
+                -t /zap/wrk/openapi.yaml \
+                -f openapi \
+                -J report_json.json \
+                -r report_html.html \
+                -w report_md.md \
+                -I \
+                2>&1 | tee zap-scan.log
+            '
 
+          ZAP_RC=$?
 
+          echo "ZAP packaged scan exit code: ${ZAP_RC}"
 
+          # -I permite warnings. Un código 3 indica error operativo.
+          if [ "$ZAP_RC" -eq 3 ]; then
+            echo "[FAIL] ZAP sufrió un error operativo"
+            cat .zap-work/zap-scan.log || true
+            false
+          fi
 
+          test -s .zap-work/report_json.json
+          test -s .zap-work/report_html.html
 
+          echo "[PASS] ZAP OpenAPI scan ejecutado y reportes generados"
 
+      - name: Upload ZAP authenticated reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-authenticated-dast
+          path: |
+            .zap-work/report_json.json
+            .zap-work/report_html.html
+            .zap-work/report_md.md
+            .zap-work/zap-scan.log
+          if-no-files-found: warn
 
       - name: Evaluate ZAP security gate
         id: zap_gate
         shell: bash
         run: |
-          REPORT="report_json.json"
+          REPORT=".zap-work/report_json.json"
 
           if [ ! -f "$REPORT" ]; then
             echo "[FAIL] ZAP JSON report no encontrado"
-            find . -maxdepth 2 -type f -iname '*zap*' -o -iname '*report*'
+            find . -maxdepth 3 -type f \( -iname '*zap*' -o -iname '*report*' \)
             exit 1
           fi
 

@@ -1,0 +1,20 @@
+title: FleetSec AdministratorAccess Attachment Outside Business Hours
+id: 2b98eb6d-0f67-4a6a-a24b-001
+status: test
+description: Detects AdministratorAccess policy attachment to IAM users outside 00:00-06:00 UTC review window.
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: iam.amazonaws.com
+    eventName: AttachUserPolicy
+    requestParameters.policyArn|endswith: AdministratorAccess
+  condition: selection
+falsepositives:
+  - Approved emergency break-glass activity
+level: high
+tags:
+  - attack.persistence
+  - attack.privilege_escalation
+  - attack.t1098

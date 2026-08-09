@@ -1,0 +1,19 @@
+title: FleetSec SQL Injection Pattern in Application Query Parameters
+id: 2b98eb6d-0f67-4a6a-a24b-003
+status: test
+description: Detects common SQL injection patterns in application query parameters.
+logsource:
+  category: webserver
+detection:
+  keywords:
+    - "' OR '1'='1"
+    - "UNION SELECT"
+    - "UNION ALL SELECT"
+    - "information_schema"
+    - "--"
+  condition: keywords
+falsepositives:
+  - Security testing in authorized laboratory
+level: high
+tags:
+  - attack.initial_access

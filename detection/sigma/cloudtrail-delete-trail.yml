@@ -1,0 +1,18 @@
+title: FleetSec CloudTrail DeleteTrail Attempt
+id: 2b98eb6d-0f67-4a6a-a24b-002
+status: test
+description: Detects attempts to delete an AWS CloudTrail trail.
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: cloudtrail.amazonaws.com
+    eventName: DeleteTrail
+  condition: selection
+falsepositives:
+  - Approved infrastructure decommissioning
+level: critical
+tags:
+  - attack.defense_evasion
+  - attack.t1562.001

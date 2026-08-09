@@ -4,6 +4,8 @@ const db = require("./database");
 
 const sqliRouter = require("./routes/sqli");
 const { router: systemRouter } = require("./routes/system");
+const { router: loginRouter } = require("./routes/login");
+const authRouter = require("./routes/auth");
 
 const app = express();
 
@@ -11,9 +13,11 @@ app.disable("x-powered-by");
 
 app.use(helmet());
 
-app.use(express.json({
-  limit: "10kb"
-}));
+app.use(
+  express.json({
+    limit: "10kb"
+  })
+);
 
 app.get("/", (req, res) => {
   return res.json({
@@ -51,6 +55,12 @@ app.use("/secure/users", sqliRouter);
 
 // Ruta segura contra Command Injection.
 app.use("/api/v1/system", systemRouter);
+
+// Login con rate limiting.
+app.use("/auth", loginRouter);
+
+// Emisión y validación JWT para DAST autenticado.
+app.use("/auth", authRouter);
 
 // Manejador básico de errores.
 app.use((err, req, res, next) => {

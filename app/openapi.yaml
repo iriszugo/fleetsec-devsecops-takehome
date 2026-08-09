@@ -1,0 +1,80 @@
+openapi: 3.0.3
+
+info:
+  title: FleetSec Security API
+  version: 1.0.0
+  description: OpenAPI specification used for authenticated DAST validation.
+
+servers:
+  - url: http://127.0.0.1:3000
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: Application healthy
+
+  /users:
+    get:
+      summary: List users
+      responses:
+        "200":
+          description: Users returned
+
+  /secure/users:
+    get:
+      summary: Secure user lookup
+      parameters:
+        - in: query
+          name: username
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Query completed
+        "400":
+          description: Invalid request
+
+  /auth/login:
+    post:
+      summary: Authenticate user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        "200":
+          description: Authentication successful
+        "401":
+          description: Invalid credentials
+        "429":
+          description: Rate limit exceeded
+        "500":
+          description: Authentication configuration unavailable
+
+  /api/v1/system/ping:
+    get:
+      summary: Secure system ping
+      parameters:
+        - in: query
+          name: host
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ping executed
+        "400":
+          description: Invalid host

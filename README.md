@@ -219,3 +219,36 @@ reports/
 - ✅ Day 3 completed
 
 Repository ready to continue with Day 4 implementation.
+
+## Arquitectura Final
+
+La arquitectura final FleetSec integra Application Security, DevSecOps CI/CD, AWS Infrastructure as Code y Detection/Incident Response.
+
+### Capas implementadas
+
+1. **Application Security:** JWT, Helmet, rate limiting, sanitización PII y controles contra SQL Injection, SSRF, IDOR, Path Traversal y Command Injection.
+2. **DevSecOps:** Gitleaks, Semgrep, Trivy, CycloneDX SBOM, Checkov y OWASP ZAP autenticado mediante JWT/OpenAPI con cobertura >=80% y Quality Gates.
+3. **AWS IaC:** IAM, KMS, S3, VPC, RDS, Secrets Manager, WAF, CloudTrail, GuardDuty, Security Hub y AWS Config.
+4. **Detection & IR:** Threat Intelligence, Sigma, MITRE ATT&CK, playbook de contención, RCA y Chain of Custody.
+
+### Flujo de seguridad
+
+Developer -> Pre-commit/Gitleaks -> GitHub Actions -> SAST/SCA/SBOM/IaC -> Security Gate -> Application -> Authenticated ZAP DAST -> AWS Security Baseline -> Detection -> Incident Response
+
+### Alineación
+
+| Marco | Controles |
+|---|---|
+| CIS AWS Foundations | IAM, logging, monitoreo y configuración segura |
+| ISO/IEC 27001:2022 | Accesos, vulnerabilidades, logging e incidentes |
+| Ley 1581 de 2012 | Protección de PII y gestión de incidentes de datos |
+
+## Sustentación técnica
+
+Guion: `docs/VIDEO-SCRIPT.md`
+
+La grabación final debe cubrir Arquitectura, Pipeline, dos vulnerabilidades y Breach Response en máximo 10 minutos.
+
+## Informe VAPT
+
+Entregable final: `reports/vapt/FleetSec_VAPT_Report.pdf`

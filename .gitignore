@@ -12,3 +12,6 @@ trivy-results.json
 .env
 .env.*
 !.env.example
+
+# Generated architecture audit - local only
+/reports/architecture/FleetSec_FULL_ARCHITECTURE_AUDIT.txt

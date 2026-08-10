@@ -1,0 +1,15 @@
+
+> fleetsec-vulnerable-app@1.0.0 test
+> jest --runInBand tests/security/pii-sanitizer.test.js
+
+PASS tests/security/pii-sanitizer.test.js
+  PII sanitizer security controls
+    ✓ redacts email, ID and Colombian phone (2 ms)
+    ✓ redacts nested objects and arrays
+    ✓ preserves legitimate non-PII values
+
+Test Suites: 1 passed, 1 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        0.167 s, estimated 1 s
+Ran all test suites matching tests/security/pii-sanitizer.test.js.

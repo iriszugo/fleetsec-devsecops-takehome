@@ -1,0 +1,18 @@
+title: FleetSec S3 Bulk GetObject Activity
+id: 2b98eb6d-0f67-4a6a-a24b-004
+status: experimental
+description: Detects high-volume S3 GetObject activity associated with potential bulk exfiltration.
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: s3.amazonaws.com
+    eventName: GetObject
+  condition: selection
+falsepositives:
+  - Approved backup or analytics workloads
+level: high
+tags:
+  - attack.exfiltration
+  - attack.t1567

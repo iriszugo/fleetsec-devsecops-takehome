@@ -1,0 +1,72 @@
+======================================================
+ FleetSec — Verificación Funcional del Día 3
+======================================================
+[PASS] Regresión Día 1
+[PASS] Regresión Día 2
+[PASS] app/lab/vulnerable/command-injection.js
+[PASS] app/src/routes/system.js
+[PASS] app/tests/security/command-injection.test.js
+[PASS] app/tests/semgrep/command-injection-positive.js
+[PASS] app/tests/semgrep/command-injection-negative.js
+[PASS] app/.semgrep/fleetsec-command-injection.yml
+[PASS] docs/vapt/0007-command-injection.md
+[PASS] Lab JS válido
+[PASS] Ruta segura
+PASS tests/security/command-injection.test.js
+  FleetSec Command Injection security controls
+    ✓ rejects shell metacharacters (28 ms)
+    ✓ accepts a valid host (15 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       2 passed, 2 total
+Snapshots:   0 total
+Time:        0.365 s, estimated 1 s
+Ran all test suites matching tests/security/command-injection.test.js.
+[PASS] Jest Day3
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 1 file tracked by git with 1 Code rule:
+  Scanning 1 file.
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+✅ Scan completed successfully.
+ • Findings: 1 (1 blocking)
+ • Rules run: 1
+ • Targets scanned: 1
+ • Parsed lines: ~100.0%
+ • No ignore information available
+Ran 1 rule on 1 file: 1 finding.
+[PASS] Semgrep positivo
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 1 file tracked by git with 1 Code rule:
+  Scanning 1 file.
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+✅ Scan completed successfully.
+ • Findings: 0 (0 blocking)
+ • Rules run: 1
+ • Targets scanned: 1
+ • Parsed lines: ~100.0%
+ • No ignore information available
+Ran 1 rule on 1 file: 0 findings.
+If Semgrep missed a finding, please send us feedback to let us know!
+See https://semgrep.dev/docs/reporting-false-negatives/
+[PASS] Semgrep negativo
+
+PASS: 14
+FAIL: 0
+
+RESULTADO AUDITORÍA DÍA 3: PASS

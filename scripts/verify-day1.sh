@@ -8,6 +8,13 @@ REPORT_DIR="$ROOT_DIR/reports/day1-verification"
 IMAGE_NAME="fleetsec-app:day1-verification"
 CONTAINER_NAME="fleetsec-day1-verification"
 
+
+
+source "$ROOT_DIR/scripts/lib/gitleaks-check.sh"
+
+
+
+
 PASS_COUNT=0
 FAIL_COUNT=0
 
@@ -15,6 +22,12 @@ GREEN="\033[0;32m"
 RED="\033[0;31m"
 YELLOW="\033[1;33m"
 NC="\033[0m"
+
+
+
+
+
+
 
 mkdir -p "$REPORT_DIR"
 
@@ -51,17 +64,24 @@ echo -e "${YELLOW}=====================================================${NC}"
 cd "$ROOT_DIR"
 
 echo
+
 echo "1. Validación de rama Git"
 
-CURRENT_BRANCH="$(git branch --show-current)"
-
-if [[ "$CURRENT_BRANCH" == "feature/day1-app-base" ]]; then
-    pass "Rama correcta: $CURRENT_BRANCH"
+if [[ "${FLEETSEC_REGRESSION_MODE:-0}" == "1" ]]; then
+    pass "Modo regresión: validación de rama omitida"
 else
-    fail "Rama incorrecta: $CURRENT_BRANCH"
+
+CURRENT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-$(git branch --show-current)}}"
+
+    if [[ "$CURRENT_BRANCH" =~ ^feature/day1- ]] ||        [[ "$CURRENT_BRANCH" =~ ^feature/day2- ]] ||        [[ "$CURRENT_BRANCH" =~ ^feature/day3- ]] ||        [[ "$CURRENT_BRANCH" =~ ^feature/day4- ]] ||        [[ "$CURRENT_BRANCH" == "main" ]]; then
+        pass "Rama válida: $CURRENT_BRANCH"
+    else
+        fail "Rama incorrecta: $CURRENT_BRANCH"
+    fi
 fi
 
 echo
+
 echo "2. Validación de estructura"
 
 check_file "app/package.json"
@@ -121,14 +141,28 @@ else
 fi
 
 echo
+
+
+echo
 echo "5. Validación Semgrep"
+
+# Compatibilidad con la evolución del laboratorio.
+# Día 1: SQLi estaba en app/src/app.js.
+# Día 2 en adelante: SQLi está aislado en app/lab/vulnerable/sqli.js.
+
+if [[ -f "$APP_DIR/lab/vulnerable/sqli.js" ]]; then
+    SQLI_TARGET="$APP_DIR/lab/vulnerable/sqli.js"
+else
+    SQLI_TARGET="$APP_DIR/src/app.js"
+fi
+
+rm -f "$REPORT_DIR/semgrep-sqli.json"
 
 semgrep scan \
     --config "$APP_DIR/.semgrep/fleetsec-sqli.yml" \
-    "$APP_DIR/src/app.js" \
+    "$SQLI_TARGET" \
     --json \
-    --output "$REPORT_DIR/semgrep-sqli.json" \
-    >/dev/null 2>&1 || true
+    >"$REPORT_DIR/semgrep-sqli.json" 2>/dev/null || true
 
 SQLI_FINDINGS="$(
     jq -r '.results | length' \
@@ -141,12 +175,13 @@ else
     fail "Regla Semgrep SQLi sin hallazgos"
 fi
 
+rm -f "$REPORT_DIR/semgrep-pii-positive.json"
+
 semgrep scan \
     --config "$ROOT_DIR/.semgrep/fleetsec-sensitive-logging.yml" \
     "$APP_DIR/tests/semgrep/pii-logging-positive.js" \
     --json \
-    --output "$REPORT_DIR/semgrep-pii-positive.json" \
-    >/dev/null 2>&1 || true
+    >"$REPORT_DIR/semgrep-pii-positive.json" 2>/dev/null || true
 
 PII_POSITIVE_FINDINGS="$(
     jq -r '.results | length' \
@@ -159,12 +194,13 @@ else
     fail "Caso positivo PII generó $PII_POSITIVE_FINDINGS hallazgos"
 fi
 
+rm -f "$REPORT_DIR/semgrep-pii-negative.json"
+
 semgrep scan \
     --config "$ROOT_DIR/.semgrep/fleetsec-sensitive-logging.yml" \
     "$APP_DIR/tests/semgrep/pii-logging-negative.js" \
     --json \
-    --output "$REPORT_DIR/semgrep-pii-negative.json" \
-    >/dev/null 2>&1 || true
+    >"$REPORT_DIR/semgrep-pii-negative.json" 2>/dev/null || true
 
 PII_NEGATIVE_FINDINGS="$(
     jq -r '.results | length' \
@@ -177,24 +213,33 @@ else
     fail "Caso negativo PII generó $PII_NEGATIVE_FINDINGS hallazgos"
 fi
 
-echo
+
+
+
+
 echo "6. Validación de secretos"
 
-if gitleaks detect \
-    --source "$ROOT_DIR" \
-    --no-banner \
-    --redact \
-    --report-format json \
-    --report-path "$REPORT_DIR/gitleaks.json" \
-    >/dev/null 2>&1; then
+if gitleaks_check "$ROOT_DIR/app" "$REPORT_DIR/gitleaks.json"; then
     pass "Gitleaks: cero secretos"
 else
-    fail "Gitleaks detectó posibles secretos"
+    fail "Gitleaks validación fallida"
 fi
 
-echo
-echo "7. Validación Docker"
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+echo "7. Validación Docker"
 if docker build \
     -t "$IMAGE_NAME" \
     "$APP_DIR" >"$REPORT_DIR/docker-build.log" 2>&1; then

@@ -1,0 +1,56 @@
+=====================================================
+ FleetSec — Cierre Definitivo Día 2 + Día 3
+=====================================================
+
+1. Validación de reportes Día 2
+[PASS] Reporte Día 2 existe: gitleaks.json
+[PASS] Reporte Día 2 existe: idor-positive.json
+[PASS] Reporte Día 2 existe: idor-negative.json
+[PASS] Reporte Día 2 existe: jwt-positive.json
+[PASS] Reporte Día 2 existe: jwt-negative.json
+[PASS] Reporte Día 2 existe: path-traversal-positive.json
+[PASS] Reporte Día 2 existe: path-traversal-negative.json
+[PASS] Reporte Día 2 existe: rate-limit-positive.json
+[PASS] Reporte Día 2 existe: rate-limit-negative.json
+[PASS] Reporte Día 2 existe: ssrf-positive.json
+[PASS] Reporte Día 2 existe: ssrf-negative.json
+[PASS] Reporte Día 2 existe: security-tests.log
+[PASS] Reporte Día 2 existe: trivy-gate.log
+
+2. Validación Gitleaks
+[PASS] Gitleaks sin secretos
+
+3. Validación Semgrep
+[PASS] Semgrep detecta caso positivo idor-positive.json
+[PASS] Semgrep detecta caso positivo jwt-positive.json
+[PASS] Semgrep detecta caso positivo path-traversal-positive.json
+[PASS] Semgrep detecta caso positivo ssrf-positive.json
+
+4. Validación casos negativos
+[PASS] Sin falsos positivos: idor-negative.json
+[PASS] Sin falsos positivos: jwt-negative.json
+[PASS] Sin falsos positivos: path-traversal-negative.json
+[PASS] Sin falsos positivos: rate-limit-negative.json
+[PASS] Sin falsos positivos: ssrf-negative.json
+
+5. Validación Trivy
+[PASS] Trivy Quality Gate aprobado
+
+6. Validación SBOM
+[PASS] SBOM CycloneDX válido
+
+7. Validación Terraform / Checkov
+[PASS] Checkov hardening sin fallos
+
+8. Validación evidencias VAPT Día 3
+[PASS] Evidencia VAPT encontrada: docs/vapt
+[PASS] Evidencia VAPT encontrada: reports/day3-verification
+[PASS] Evidencia VAPT encontrada: docs/evidence
+
+=====================================================
+ RESULTADO FINAL
+=====================================================
+PASS: 29
+FAIL: 0
+
+DÍA 2 + DÍA 3 APROBADOS

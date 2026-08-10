@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: FleetSec Security API
+  version: 1.0.0
+  description: OpenAPI specification used for authenticated DAST validation.
+servers:
+- url: http://127.0.0.1:3000
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Application healthy
+  /users:
+    get:
+      summary: List users
+      responses:
+        '200':
+          description: Users returned
+  /secure/users:
+    get:
+      summary: Secure user lookup
+      parameters:
+      - in: query
+        name: username
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Query completed
+        '400':
+          description: Invalid request
+  /api/v1/system/ping:
+    get:
+      summary: Secure system ping
+      parameters:
+      - in: query
+        name: host
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Ping executed
+        '400':
+          description: Invalid host
+  /auth/profile:
+    get:
+      summary: Authenticated JWT profile
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Authenticated profile returned
+        '401':
+          description: Missing, invalid or expired bearer token
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

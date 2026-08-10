@@ -1,0 +1,13 @@
+PASS tests/security/rate-limit.test.js
+PASS tests/security/idor.test.js
+PASS tests/security/jwt.test.js
+PASS tests/security/ssrf.test.js
+PASS tests/security/command-injection.test.js
+PASS tests/security/path-traversal.test.js
+PASS tests/security/pii-sanitizer.test.js
+
+Test Suites: 7 passed, 7 total
+Tests:       17 passed, 17 total
+Snapshots:   0 total
+Time:        0.762 s, estimated 1 s
+Ran all test suites matching tests/security.

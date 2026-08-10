@@ -1,0 +1,66 @@
+rules:
+  - id: fleetsec-command-injection-dangerous-shell
+    message: >-
+      Possible OS Command Injection detected. Avoid child_process.exec,
+      child_process.execSync, or spawn with shell enabled when processing
+      untrusted input.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+
+    metadata:
+      category: security
+      technology:
+        - nodejs
+        - express
+      cwe:
+        - CWE-78
+      owasp:
+        - A03:2021-Injection
+      confidence: HIGH
+      impact: HIGH
+      likelihood: HIGH
+
+    pattern-either:
+      - patterns:
+          - pattern-inside: |
+              const { ..., exec, ... } = require("child_process");
+              ...
+          - pattern: exec($COMMAND, ...)
+
+      - patterns:
+          - pattern-inside: |
+              const { ..., execSync, ... } = require("child_process");
+              ...
+          - pattern: execSync($COMMAND, ...)
+
+      - patterns:
+          - pattern-inside: |
+              const $CP = require("child_process");
+              ...
+          - pattern-either:
+              - pattern: $CP.exec($COMMAND, ...)
+              - pattern: $CP.execSync($COMMAND, ...)
+
+      - patterns:
+          - pattern-inside: |
+              const { ..., spawn, ... } = require("child_process");
+              ...
+          - pattern: |
+              spawn($COMMAND, $ARGS, {
+                ...,
+                shell: true,
+                ...
+              })
+
+      - patterns:
+          - pattern-inside: |
+              const $CP = require("child_process");
+              ...
+          - pattern: |
+              $CP.spawn($COMMAND, $ARGS, {
+                ...,
+                shell: true,
+                ...
+              })

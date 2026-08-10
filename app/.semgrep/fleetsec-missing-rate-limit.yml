@@ -1,0 +1,39 @@
+rules:
+  - id: fleetsec-login-without-rate-limit
+
+    message: "Authentication endpoint detected without the expected rate limiting middleware."
+
+    severity: ERROR
+
+    languages:
+      - javascript
+
+    patterns:
+      - pattern: |
+          $APP.post("/login", $HANDLER)
+
+      - pattern-not: |
+          $APP.post("/login", $LIMITER, $HANDLER)
+
+    metadata:
+      category: security
+
+      technology:
+        - nodejs
+        - express
+        - express-rate-limit
+
+      cwe:
+        - CWE-307
+
+      owasp:
+        - "A07:2021-Identification and Authentication Failures"
+
+      confidence: MEDIUM
+      impact: HIGH
+      likelihood: HIGH
+
+      references:
+        - "https://cwe.mitre.org/data/definitions/307.html"
+        - "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/"
+        - "https://express-rate-limit.mintlify.app/"

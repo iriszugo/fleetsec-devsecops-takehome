@@ -9,3 +9,4 @@ reports
 .env
 .env.*
 *.log
+safe-files
